@@ -1,0 +1,39 @@
+# Render Infrastructure-as-Code Blueprint
+# Deploy backend API and WebSocket service to Render with zero manual configuration
+version: "1"
+
+services:
+  - type: web
+    name: roadside-aaa-backend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false # Set in Render Dashboard with your MongoDB Atlas connection string
+      - key: JWT_SECRET
+        generateValue: true # Render will automatically generate a secure cryptographic secret
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false # Set to your deployed Vercel URL (e.g. https://roadside-aaa.vercel.app)
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 1000
+      - key: SMTP_SERVICE
+        value: gmail
+      - key: SMTP_USER
+        sync: false # Set in Render Dashboard with your Gmail address
+      - key: SMTP_PASS
+        sync: false # Set in Render Dashboard with your 16-character Gmail App Password
